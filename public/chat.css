@@ -1,9 +1,10 @@
-li {
-	list-style-type: none;
-}
 .chat {
 	display: flex;
 	flex-direction: column;
-	max-width: 400px;
+	overflow: scroll;
 	flex-grow: 2;
+	max-width: 250px;
+	max-height: 93vh;
+	justify-content: flex-end;
 }
+

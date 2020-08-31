@@ -5,6 +5,7 @@ class PainterBite {
 	
 	constructor() {
 		this.isDrawing = false;
+		this.lineWidth = document.querySelector("#line-width").value;
 		this.x = 0;
 		this.y = 0;
 		this.paint = document.getElementById('canvas');
@@ -17,17 +18,12 @@ class PainterBite {
 	}
 
 
-	drawLine(x1, y1, x2, y2, color) {
-		console.log(x1)
-		console.log(y1)
-		console.log(x2)
-		console.log(y2)
-
+	drawLine(drawInfos) {
 		this.context.beginPath();
-		this.context.strokeStyle = color;
-		this.context.lineWidth = 1;
-		this.context.moveTo(x1, y1);
-		this.context.lineTo(x2, y2);
+		this.context.strokeStyle = drawInfos.color;
+		this.context.lineWidth = drawInfos.width;
+		this.context.moveTo(drawInfos.x1, drawInfos.y1);
+		this.context.lineTo(drawInfos.x2, drawInfos.y2);
 		this.context.stroke();
 		this.context.closePath();
 	}
@@ -38,61 +34,110 @@ class PainterBite {
 		this.context.fillRect(0, 0, this.paint.width, this.paint.height);
 	}
 
+	globalErase() {
+		window.socket.emit("g-erase")
+	}
+
 	setColor(e)  {
 		this.color = e.getAttribute("data-color")
+	}
+
+	stopDrawing(e) {
+		if (this.isDrawing) {
+			this.x = 0;
+			this.y = 0;
+			this.isDrawing = false;
+		}
+	}
+
+	saveDrawing() {
+		localStorage.setItem("paint", this.paint.toDataURL());
+	}
+
+	loadDrawing() {
+		let src = localStorage.getItem("paint");
+		let img = document.createElement('img');
+		img.src = src;
+		this.erase;
+		this.context.drawImage(img, 0, 0)
+	}
+
+	handleMove(e) {
+		if (this.isDrawing) {
+			this.drawLine({
+				x1: this.x,
+				y1: this.y,
+				x2: e.clientX - this.rect.left,
+				x2: e.clientY - this.rect.top,
+				color: this.color,
+				width: this.lineWidth,
+			});
+			socket.emit("drawing", {
+				x1: this.x, 
+				y1: this.y,
+				x2: e.clientX - this.rect.left,
+				y2: e.clientY - this.rect.top,
+				color: this.color,
+				lineWidth: this.lineWidth,
+			})
+			this.x = e.clientX - this.rect.left;
+			this.y = e.clientY - this.rect.top;
+		}
+	}
+
+	bindClickButtons(e) {
+		const action = e.currentTarget.getAttribute("data-action")
+		if (typeof this[action] === "function") {
+			this[action](e.currentTarget)
+		}
 	}
 
 	listeners() {
 
 		window.socket.on('drawing', (data) => {
-			this.drawLine(data.x, data.y, data.x1, data.y1, data.color)
+			this.drawLine({
+				x1: data.x1,
+				y1: data.y1, 
+				x2: data.x2, 
+				y2: data.y2, 
+				color: data.color,
+				width: data.lineWidth,
+			})
+		})
+
+		window.socket.on('g-erase', () => {
+			this.erase();
 		})
 
 		const actions = [...document.querySelectorAll("[data-action]")]
 
 		actions.forEach(elem => {
 			elem.addEventListener("click", e => {
-				const action = e.currentTarget.getAttribute("data-action")
-				if (typeof this[action] === "function") {
-					this[action](e.currentTarget)
-				}
+				this.bindClickButtons(e)
 			})
 		})
 
 		this.paint.addEventListener('mousedown', e => {
-			this.rect = this.paint.getBoundingClientRect();
 			this.x = e.clientX - this.rect.left;
 			this.y = e.clientY - this.rect.top;
 			this.isDrawing = true;
 		});
 
 		this.paint.addEventListener('mousemove', e => {
-			if (this.isDrawing) {
-				this.drawLine(this.x, this.y, e.clientX - this.rect.left, e.clientY - this.rect.top, this.color);
-				socket.emit("drawing", {
-					x: this.x, 
-					y: this.y,
-					x1: e.clientX - this.rect.left,
-					y1: e.clientY - this.rect.top,
-					color: this.color,
-				})
-				this.x = e.clientX - this.rect.left;
-				this.y = e.clientY - this.rect.top;
-			}
+			this.handleMove(e)
 		});
 
 		this.paint.addEventListener('mouseup', e => {
-			if (this.isDrawing) {
-				this.drawLine(e.clientX - this.rect.left, e.clientY - this.rect.top, this.color);
-				this.x = 0;
-				this.y = 0;
-				this.isDrawing = false;
-			}
-			localStorage.setItem("paint", this.paint.toDataURL());
+			this.handleMove(e)
+			this.stopDrawing(e)
 		});
 
 		document.querySelector("form").addEventListener("submit", function(e) {
 			e.preventDefault();
+		})
+
+		document.querySelector("#line-width").addEventListener("mouseup", (e) => {
+			this.lineWidth = e.currentTarget.value;
 		})
 	}
 

@@ -13,20 +13,31 @@
 	<div class="container">
 
 		<div class="chat">
-			<h1>chat</h1>
-			<ul id="messages">
+			<div id="messages">
 				
-			</ul>
-			<form>
-				<input type="text" id="message">
-				<input type="submit" id="bouton">
-			</form>
+			</div>
+			<div class="submite">
+				<form>
+					<input type="text" id="message">
+					<input type="submit" id="bouton" class="visually-hidden">
+				</form>
+			</div>
 		</div>
 
 		<div class="paint">
-			<canvas id="canvas" width="800" height="600"></canvas>
+
+			<canvas id="canvas" width="1200" height="840"></canvas>
+
 			<div id="toolbar">
-				<button data-action="erase">effacer</button>
+
+				<div class="action">
+					
+					<button data-action="erase">reset</button>
+					<button data-action="globalErase">RESET</button>
+					<button data-action="saveDrawing">sauvegarder</button>
+					<button data-action="loadDrawing">charger</button>
+				</div>
+
 				<div class="colors">
 					<button data-action="setColor" data-color="teal" class="color color--teal"><span class="visually-hidden">teal</span></button>
 					<button data-action="setColor" data-color="pink" class="color color--pink"><span class="visually-hidden">pink</span></button>
@@ -34,7 +45,18 @@
 					<button data-action="setColor" data-color="green" class="color color--green"><span class="visually-hidden">green</span></button>
 					<button data-action="setColor" data-color="gold" class="color color--gold"><span class="visually-hidden">gold</span></button>
 					<button data-action="setColor" data-color="deeppink" class="color color--deeppink"><span class="visually-hidden">deeppink</span></button>
+					<button data-action="setColor" data-color="maroon" class="color color--maroon"><span class="visually-hidden">maroon</span></button>
+					<button data-action="setColor" data-color="lime" class="color color--lime"><span class="visually-hidden">lime</span></button>
+					<button data-action="setColor" data-color="grey" class="color color--grey"><span class="visually-hidden">grey</span></button>
+					<button data-action="setColor" data-color="orange" class="color color--orange"><span class="visually-hidden">orange</span></button>
+					<button data-action="setColor" data-color="white" class="color color--white"><span class="visually-hidden">white</span></button>
 				</div>
+
+				<div class="line-width">
+					<input type="range" id="line-width" name="line-width"
+					min="1" max="20" step="1">
+				</div>
+
 			</div>
 		</div>
 	</div>

@@ -1,26 +1,39 @@
 .paint {
 	display: flex;
-	margin-left: 3em;
-	flex-grow: 8;	
+	margin-left: 2em;
+	flex-grow: 16;
+}
+
+.action {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+#toolbar {
+	margin-left: 20px;
+	max-width: 250px;
+}
+
+.visually-hidden {
+	display: none;
 }
 
 .colors {
-	display: grid;
-	grid-template-columns: repeat(1, 100px);
-	grid-auto-rows: 100px;
-	outline: red 1px solid;
+	margin-top: 15px;
+	display: flex;
+	flex-wrap: wrap;
+
 }
 
 .color {
-
+	width: 20px;
+	height: 20px;
 }
 
-td {
-	border: 1px solid black;
-	width: 40px;
-	height: 40px;
-}
 
+.line-width {
+	margin-top: 10px;
+}
 
 .color--black {
 	background-color: black;
@@ -56,4 +69,24 @@ td {
 
 .color--deeppink {
 	background-color: deeppink;
+}
+
+.color--lime {
+	background-color: lime;
+}
+
+.color--maroon {
+	background-color: maroon;
+}
+
+.color--grey {
+	background-color: grey;
+}
+
+.color--orange {
+	background-color: orange;
+}
+
+.color--white {
+	background-color: white;
 }

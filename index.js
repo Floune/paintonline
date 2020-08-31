@@ -21,6 +21,10 @@ io.on('connection', (socket) => {
 	socket.on("drawing", (data) => {
 		io.emit('drawing', data)
 	})
+
+	socket.on("g-erase", () => {
+		io.emit('g-erase')
+	})
 });
 
 http.listen(port, () => {

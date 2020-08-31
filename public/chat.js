@@ -1,27 +1,34 @@
+document.addEventListener('DOMContentLoaded', () => new ChatBite)
 window.socket = io()
 
-document.getElementById('bouton').addEventListener("click", function() {
-  sendMsg()
-})
+class ChatBite {
 
-document.getElementById('message').addEventListener('keydown', (e) => {
-    if (e.key === "Enter") {
-      sendMsg()
-    }
-});
+  constructor() {
+    this.listeners();
+  }
 
-socket.on('message', function(msg){
-  appendmsg(msg)
-})
+  appendmsg(msg) {
+    var node = document.createElement("p");
+    var textnode = document.createTextNode(msg)
+    node.appendChild(textnode)
+    document.getElementById("messages").appendChild(node)
+  }
 
-function appendmsg(msg) {
-  var node = document.createElement("li");
-  var textnode = document.createTextNode(msg)
-  node.appendChild(textnode)
-  document.getElementById("messages").appendChild(node)
+  sendMsg() {
+    socket.emit("message", document.getElementById("message").value)
+    document.getElementById("message").value = ""
+  }
+
+  listeners() {
+    document.getElementById('bouton').addEventListener("click", () => {
+      this.sendMsg()
+    })
+
+    socket.on('message', (msg) => {
+      this.appendmsg(msg)
+    })
+  }
+
 }
 
-function sendMsg() {
-  socket.emit("message", document.getElementById("message").value)
-  document.getElementById("message").value = ""
-}
+
