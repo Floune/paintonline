@@ -15,7 +15,7 @@ class ChatBite {
   }
 
   sendMsg() {
-    socket.emit("message", document.getElementById("message").value)
+    socket.emit("message", escape(document.getElementById("message").value))
     document.getElementById("message").value = ""
   }
 
