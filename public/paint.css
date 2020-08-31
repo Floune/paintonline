@@ -1,0 +1,35 @@
+.paint {
+	display: flex;
+	margin-left: 3em;
+	flex-grow: 8;	
+}
+
+td {
+	border: 1px solid black;
+	width: 40px;
+	height: 40px;
+}
+
+#black {
+	background-color: black;
+}
+
+#yellow {
+	background-color: yellow;
+}
+
+#blue {
+	background-color: blue;
+}
+
+#red {
+	background-color: red;
+}
+
+#green {
+	background-color: green;
+}
+
+#pink {
+	background-color: pink;
+}

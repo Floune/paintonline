@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link type="text/css" rel="stylesheet" href="index.css">
+	<link type="text/css" rel="stylesheet" href="chat.css">
+	<link type="text/css" rel="stylesheet" href="paint.css">
+	<script src="/socket.io/socket.io.js"></script>
+	<title>megapaint</title>
+</head>
+<body>
+	<div class="container">
+
+		<div class="chat">
+			<h1>chat</h1>
+			<ul id="messages">
+				
+			</ul>
+			<input type="text" id="message">
+			<input type="submit" id="bouton">
+		</div>
+
+		<div class="paint">
+			<canvas id="canvas" width="800" height="600"></canvas>
+			<div id="toolbar">
+				<button id="erase">effacer</button>
+				<table>
+					<tr>
+						<td id="black"></td>
+						<td id="yellow"></td>
+					</tr>
+					<tr>
+						<td id="blue"></td>
+						<td id="red"></td>
+					</tr>
+					<tr>
+						<td id="green"></td>
+						<td id="pink"></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+	<script src="chat.js"></script>
+	<script src="paint.js"></script>
+</body>
+</html>
