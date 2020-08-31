@@ -1,75 +1,91 @@
-let isDrawing = false;
-let x = 0;
-let y = 0;
-const paint = document.getElementById('canvas');
-const context = canvas.getContext('2d');
-let color = "";
-erase();
+document.addEventListener('DOMContentLoaded', onStart)
 
-let rect = paint.getBoundingClientRect();
+function onStart() {
 
-socket.on('drawing', function(data){
-	drawLine(context, data.x, data.y, data.x1, data.y1, data.color)
-})
+	let isDrawing = false;
+	let x = 0;
+	let y = 0;
+	const paint = document.getElementById('canvas');
+	const context = canvas.getContext('2d');
+	let color = "";
+	let rect = paint.getBoundingClientRect();
+	erase(context, paint)
 
-document.getElementById("erase").addEventListener("click", e => {
-	erase()
-})
+	if (localStorage.getItem("paint")) {
+		console.log("sdf")
+		var dataURL = localStorage.getItem("paint");
+		var img = new Image;
+		img.src = dataURL;
+		console.log(img)
+		context.drawImage(img, 0, 0);
+	}
 
-document.getElementById("black").addEventListener("click", e => {
-	color = "black";
-})
 
-document.getElementById("yellow").addEventListener("click", e => {
-	color = "yellow";
-})
+	socket.on('drawing', function(data){
+		drawLine(context, data.x, data.y, data.x1, data.y1, data.color)
+	})
 
-document.getElementById("blue").addEventListener("click", e => {
-	color = "blue";
-})
+	document.getElementById("erase").addEventListener("click", e => {
+		erase(context, paint)
+	})
 
-document.getElementById("red").addEventListener("click", e => {
-	color = "red";
-})
+	document.getElementById("black").addEventListener("click", e => {
+		color = "black";
+	})
 
-document.getElementById("green").addEventListener("click", e => {
-	color = "green";
-})
+	document.getElementById("yellow").addEventListener("click", e => {
+		color = "yellow";
+	})
 
-document.getElementById("pink").addEventListener("click", e => {
-	color = "pink";
-})
+	document.getElementById("blue").addEventListener("click", e => {
+		color = "blue";
+	})
 
-paint.addEventListener('mousedown', e => {
-	rect = paint.getBoundingClientRect();
-	x = e.clientX - rect.left;
-	y = e.clientY - rect.top;
-	isDrawing = true;
-});
+	document.getElementById("red").addEventListener("click", e => {
+		color = "red";
+	})
 
-paint.addEventListener('mousemove', e => {
-	if (isDrawing === true) {
-		drawLine(context, x, y, e.clientX - rect.left, e.clientY - rect.top, color);
-		socket.emit("drawing", {
-			x: x, 
-			y: y,
-			x1: e.clientX - rect.left,
-			y1: e.clientY - rect.top,
-			color: color,
-		})
+	document.getElementById("green").addEventListener("click", e => {
+		color = "green";
+	})
+
+	document.getElementById("pink").addEventListener("click", e => {
+		color = "pink";
+	})
+
+	paint.addEventListener('mousedown', e => {
+		rect = paint.getBoundingClientRect();
 		x = e.clientX - rect.left;
 		y = e.clientY - rect.top;
-	}
-});
+		isDrawing = true;
+	});
 
-window.addEventListener('mouseup', e => {
-	if (isDrawing === true) {
-		drawLine(context, x, y, e.clientX - rect.left, e.clientY - rect.top);
-		x = 0;
-		y = 0;
-		isDrawing = false;
-	}
-});
+	paint.addEventListener('mousemove', e => {
+		if (isDrawing === true) {
+			drawLine(context, x, y, e.clientX - rect.left, e.clientY - rect.top, color);
+			socket.emit("drawing", {
+				x: x, 
+				y: y,
+				x1: e.clientX - rect.left,
+				y1: e.clientY - rect.top,
+				color: color,
+			})
+			x = e.clientX - rect.left;
+			y = e.clientY - rect.top;
+		}
+	});
+
+	paint.addEventListener('mouseup', e => {
+		if (isDrawing === true) {
+			drawLine(context, x, y, e.clientX - rect.left, e.clientY - rect.top);
+			x = 0;
+			y = 0;
+			isDrawing = false;
+		}
+		localStorage.setItem("paint", paint.toDataURL());
+	});
+
+}
 
 function drawLine(context, x1, y1, x2, y2, dColor) {
 	context.beginPath();
@@ -81,7 +97,7 @@ function drawLine(context, x1, y1, x2, y2, dColor) {
 	context.closePath();
 }
 
-function erase(ctx) {
+function erase(context, paint) {
 	context.clearRect(0, 0, paint.width, paint.height);
 	context.fillStyle = "white";
 	context.fillRect(0, 0, paint.width, paint.height);
