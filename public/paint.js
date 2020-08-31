@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => new PainterBite)
 class PainterBite {
 	
 	constructor() {
+		this.shape = "rond"
 		this.isDrawing = false;
 		this.lineWidth = document.querySelector("#line-width").value;
 		this.x = 0;
@@ -22,8 +23,20 @@ class PainterBite {
 		this.context.beginPath();
 		this.context.strokeStyle = drawInfos.color;
 		this.context.lineWidth = drawInfos.width;
-		this.context.moveTo(drawInfos.x1, drawInfos.y1);
-		this.context.lineTo(drawInfos.x2, drawInfos.y2);
+		if (drawInfos.shape === "rond") {
+			this.context.arc(drawInfos.x1, drawInfos.y1, 7.5, 0, Math.PI * 2, false);
+		}
+		if (drawInfos.shape === "trait") {
+			this.context.moveTo(drawInfos.x1, drawInfos.y1);
+			this.context.lineTo(drawInfos.x2, drawInfos.y2);
+		}
+		if (drawInfos.shape === "triangle") {
+			this.context.moveTo(drawInfos.x1, drawInfos.y1);
+			this.context.lineTo(drawInfos.x1 + 10, drawInfos.y1 + 20);
+			this.context.lineTo(drawInfos.x1 + 20, drawInfos.y1);
+			this.context.lineTo(drawInfos.x1, drawInfos.y1);
+		}
+
 		this.context.stroke();
 		this.context.closePath();
 	}
@@ -71,6 +84,7 @@ class PainterBite {
 				x2: e.clientY - this.rect.top,
 				color: this.color,
 				width: this.lineWidth,
+				shape: this.shape,
 			});
 			socket.emit("drawing", {
 				x1: this.x, 
@@ -79,10 +93,15 @@ class PainterBite {
 				y2: e.clientY - this.rect.top,
 				color: this.color,
 				lineWidth: this.lineWidth,
+				shape: this.shape,
 			})
 			this.x = e.clientX - this.rect.left;
 			this.y = e.clientY - this.rect.top;
 		}
+	}
+
+	setShape(e) {
+		this.shape = e.getAttribute("data-shape")
 	}
 
 	bindClickButtons(e) {
@@ -102,6 +121,7 @@ class PainterBite {
 				y2: data.y2, 
 				color: data.color,
 				width: data.lineWidth,
+				shape: data.shape
 			})
 		})
 
