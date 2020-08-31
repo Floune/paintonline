@@ -4,32 +4,56 @@
 	flex-grow: 8;	
 }
 
+.colors {
+	display: grid;
+	grid-template-columns: repeat(1, 100px);
+	grid-auto-rows: 100px;
+	outline: red 1px solid;
+}
+
+.color {
+
+}
+
 td {
 	border: 1px solid black;
 	width: 40px;
 	height: 40px;
 }
 
-#black {
+
+.color--black {
 	background-color: black;
 }
 
-#yellow {
+.color--yellow {
 	background-color: yellow;
 }
 
-#blue {
+.color--blue {
 	background-color: blue;
 }
 
-#red {
+.color--red {
 	background-color: red;
 }
 
-#green {
+.color--green {
 	background-color: green;
 }
 
-#pink {
+.color--pink {
 	background-color: pink;
+}
+
+.color--teal {
+	background-color: teal;
+}
+
+.color--gold {
+	background-color: gold;
+}
+
+.color--deeppink {
+	background-color: deeppink;
 }

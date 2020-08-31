@@ -1,104 +1,99 @@
-document.addEventListener('DOMContentLoaded', onStart)
+document.addEventListener('DOMContentLoaded', () => new PainterBite)
 
-function onStart() {
 
-	let isDrawing = false;
-	let x = 0;
-	let y = 0;
-	const paint = document.getElementById('canvas');
-	const context = canvas.getContext('2d');
-	let color = "";
-	let rect = paint.getBoundingClientRect();
-	erase(context, paint)
-
-	if (localStorage.getItem("paint")) {
-		console.log("sdf")
-		var dataURL = localStorage.getItem("paint");
-		var img = new Image;
-		img.src = dataURL;
-		console.log(img)
-		context.drawImage(img, 0, 0);
+class PainterBite {
+	
+	constructor() {
+		this.isDrawing = false;
+		this.x = 0;
+		this.y = 0;
+		this.paint = document.getElementById('canvas');
+		this.context = this.paint.getContext('2d');
+		this.color = "";
+		this.rect = this.paint.getBoundingClientRect();
+		this.erase();
+		this.listeners();
+		this.drawLine = this.drawLine.bind(this)
 	}
 
 
-	socket.on('drawing', function(data){
-		drawLine(context, data.x, data.y, data.x1, data.y1, data.color)
-	})
+	drawLine(x1, y1, x2, y2, color) {
+		console.log(x1)
+		console.log(y1)
+		console.log(x2)
+		console.log(y2)
 
-	document.getElementById("erase").addEventListener("click", e => {
-		erase(context, paint)
-	})
+		this.context.beginPath();
+		this.context.strokeStyle = color;
+		this.context.lineWidth = 1;
+		this.context.moveTo(x1, y1);
+		this.context.lineTo(x2, y2);
+		this.context.stroke();
+		this.context.closePath();
+	}
 
-	document.getElementById("black").addEventListener("click", e => {
-		color = "black";
-	})
+	erase() {
+		this.context.clearRect(0, 0, this.paint.width, this.paint.height);
+		this.context.fillStyle = "white";
+		this.context.fillRect(0, 0, this.paint.width, this.paint.height);
+	}
 
-	document.getElementById("yellow").addEventListener("click", e => {
-		color = "yellow";
-	})
+	setColor(e)  {
+		this.color = e.getAttribute("data-color")
+	}
 
-	document.getElementById("blue").addEventListener("click", e => {
-		color = "blue";
-	})
+	listeners() {
 
-	document.getElementById("red").addEventListener("click", e => {
-		color = "red";
-	})
+		window.socket.on('drawing', (data) => {
+			this.drawLine(data.x, data.y, data.x1, data.y1, data.color)
+		})
 
-	document.getElementById("green").addEventListener("click", e => {
-		color = "green";
-	})
+		const actions = [...document.querySelectorAll("[data-action]")]
 
-	document.getElementById("pink").addEventListener("click", e => {
-		color = "pink";
-	})
-
-	paint.addEventListener('mousedown', e => {
-		rect = paint.getBoundingClientRect();
-		x = e.clientX - rect.left;
-		y = e.clientY - rect.top;
-		isDrawing = true;
-	});
-
-	paint.addEventListener('mousemove', e => {
-		if (isDrawing === true) {
-			drawLine(context, x, y, e.clientX - rect.left, e.clientY - rect.top, color);
-			socket.emit("drawing", {
-				x: x, 
-				y: y,
-				x1: e.clientX - rect.left,
-				y1: e.clientY - rect.top,
-				color: color,
+		actions.forEach(elem => {
+			elem.addEventListener("click", e => {
+				const action = e.currentTarget.getAttribute("data-action")
+				if (typeof this[action] === "function") {
+					this[action](e.currentTarget)
+				}
 			})
-			x = e.clientX - rect.left;
-			y = e.clientY - rect.top;
-		}
-	});
+		})
 
-	paint.addEventListener('mouseup', e => {
-		if (isDrawing === true) {
-			drawLine(context, x, y, e.clientX - rect.left, e.clientY - rect.top);
-			x = 0;
-			y = 0;
-			isDrawing = false;
-		}
-		localStorage.setItem("paint", paint.toDataURL());
-	});
+		this.paint.addEventListener('mousedown', e => {
+			this.rect = this.paint.getBoundingClientRect();
+			this.x = e.clientX - this.rect.left;
+			this.y = e.clientY - this.rect.top;
+			this.isDrawing = true;
+		});
 
-}
+		this.paint.addEventListener('mousemove', e => {
+			if (this.isDrawing) {
+				this.drawLine(this.x, this.y, e.clientX - this.rect.left, e.clientY - this.rect.top, this.color);
+				socket.emit("drawing", {
+					x: this.x, 
+					y: this.y,
+					x1: e.clientX - this.rect.left,
+					y1: e.clientY - this.rect.top,
+					color: this.color,
+				})
+				this.x = e.clientX - this.rect.left;
+				this.y = e.clientY - this.rect.top;
+			}
+		});
 
-function drawLine(context, x1, y1, x2, y2, dColor) {
-	context.beginPath();
-	context.strokeStyle = dColor;
-	context.lineWidth = 1;
-	context.moveTo(x1, y1);
-	context.lineTo(x2, y2);
-	context.stroke();
-	context.closePath();
-}
+		this.paint.addEventListener('mouseup', e => {
+			if (this.isDrawing) {
+				this.drawLine(e.clientX - this.rect.left, e.clientY - this.rect.top, this.color);
+				this.x = 0;
+				this.y = 0;
+				this.isDrawing = false;
+			}
+			localStorage.setItem("paint", this.paint.toDataURL());
+		});
 
-function erase(context, paint) {
-	context.clearRect(0, 0, paint.width, paint.height);
-	context.fillStyle = "white";
-	context.fillRect(0, 0, paint.width, paint.height);
+		document.querySelector("form").addEventListener("submit", function(e) {
+			e.preventDefault();
+		})
+	}
+
 }

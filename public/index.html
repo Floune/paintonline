@@ -17,28 +17,24 @@
 			<ul id="messages">
 				
 			</ul>
-			<input type="text" id="message">
-			<input type="submit" id="bouton">
+			<form>
+				<input type="text" id="message">
+				<input type="submit" id="bouton">
+			</form>
 		</div>
 
 		<div class="paint">
 			<canvas id="canvas" width="800" height="600"></canvas>
 			<div id="toolbar">
-				<button id="erase">effacer</button>
-				<table>
-					<tr>
-						<td id="black"></td>
-						<td id="yellow"></td>
-					</tr>
-					<tr>
-						<td id="blue"></td>
-						<td id="red"></td>
-					</tr>
-					<tr>
-						<td id="green"></td>
-						<td id="pink"></td>
-					</tr>
-				</table>
+				<button data-action="erase">effacer</button>
+				<div class="colors">
+					<button data-action="setColor" data-color="teal" class="color color--teal"><span class="visually-hidden">teal</span></button>
+					<button data-action="setColor" data-color="pink" class="color color--pink"><span class="visually-hidden">pink</span></button>
+					<button data-action="setColor" data-color="red" class="color color--red"><span class="visually-hidden">red</span></button>
+					<button data-action="setColor" data-color="green" class="color color--green"><span class="visually-hidden">green</span></button>
+					<button data-action="setColor" data-color="gold" class="color color--gold"><span class="visually-hidden">gold</span></button>
+					<button data-action="setColor" data-color="deeppink" class="color color--deeppink"><span class="visually-hidden">deeppink</span></button>
+				</div>
 			</div>
 		</div>
 	</div>

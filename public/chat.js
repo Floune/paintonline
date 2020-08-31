@@ -1,4 +1,4 @@
-let socket = io()
+window.socket = io()
 
 document.getElementById('bouton').addEventListener("click", function() {
   sendMsg()
