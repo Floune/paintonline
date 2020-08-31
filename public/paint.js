@@ -6,8 +6,6 @@ const context = canvas.getContext('2d');
 let color = "";
 erase();
 
-const rect = paint.getBoundingClientRect();
-
 socket.on('drawing', function(data){
 	drawLine(context, data.x, data.y, data.x1, data.y1, data.color)
 })
@@ -41,6 +39,7 @@ document.getElementById("pink").addEventListener("click", e => {
 })
 
 paint.addEventListener('mousedown', e => {
+	const rect = paint.getBoundingClientRect();
 	x = e.clientX - rect.left;
 	y = e.clientY - rect.top;
 	isDrawing = true;
