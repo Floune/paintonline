@@ -1,50 +1,49 @@
 document.addEventListener('DOMContentLoaded', () => new PainterBite)
 
-
 class PainterBite {
 	
 	constructor() {
 		this.shape = "rond"
-		this.isDrawing = false;
-		this.lineWidth = document.querySelector("#line-width").value;
-		this.x = 0;
-		this.y = 0;
-		this.paint = document.getElementById('canvas');
-		this.context = this.paint.getContext('2d');
-		this.color = "";
-		this.rect = this.paint.getBoundingClientRect();
-		this.erase();
-		this.listeners();
-		this.drawLine = this.drawLine.bind(this)
+		this.isFilling = false
+		this.isDrawing = false
+		this.lineWidth = document.querySelector("#line-width").value
+		this.x = 0
+		this.y = 0
+		this.paint = document.getElementById('canvas')
+		this.context = this.paint.getContext('2d')
+		this.color = "black"
+		this.rect = this.paint.getBoundingClientRect()
+		this.erase()
+		this.listeners()
 	}
 
 
 	drawLine(drawInfos) {
-		this.context.beginPath();
-		this.context.strokeStyle = drawInfos.color;
-		this.context.lineWidth = drawInfos.width;
+		this.context.beginPath()
+		this.context.strokeStyle = drawInfos.color
+		this.context.lineWidth = drawInfos.width
 		if (drawInfos.shape === "rond") {
-			this.context.arc(drawInfos.x1, drawInfos.y1, 7.5, 0, Math.PI * 2, false);
+			this.context.arc(drawInfos.x1, drawInfos.y1, 7.5, 0, Math.PI * 2, false)
 		}
 		if (drawInfos.shape === "trait") {
-			this.context.moveTo(drawInfos.x1, drawInfos.y1);
-			this.context.lineTo(drawInfos.x2, drawInfos.y2);
+			this.context.moveTo(drawInfos.x1, drawInfos.y1)
+			this.context.lineTo(drawInfos.x2, drawInfos.y2)
 		}
 		if (drawInfos.shape === "triangle") {
-			this.context.moveTo(drawInfos.x1, drawInfos.y1);
-			this.context.lineTo(drawInfos.x1 + 10, drawInfos.y1 + 20);
-			this.context.lineTo(drawInfos.x1 + 20, drawInfos.y1);
-			this.context.lineTo(drawInfos.x1, drawInfos.y1);
+			this.context.moveTo(drawInfos.x1, drawInfos.y1)
+			this.context.lineTo(drawInfos.x1 + 10, drawInfos.y1 + 20)
+			this.context.lineTo(drawInfos.x1 + 20, drawInfos.y1)
+			this.context.lineTo(drawInfos.x1, drawInfos.y1)
 		}
 
-		this.context.stroke();
-		this.context.closePath();
+		this.context.stroke()
+		this.context.closePath()
 	}
 
 	erase() {
-		this.context.clearRect(0, 0, this.paint.width, this.paint.height);
-		this.context.fillStyle = "white";
-		this.context.fillRect(0, 0, this.paint.width, this.paint.height);
+		this.context.clearRect(0, 0, this.paint.width, this.paint.height)
+		this.context.fillStyle = "white"
+		this.context.fillRect(0, 0, this.paint.width, this.paint.height)
 	}
 
 	globalErase() {
@@ -55,23 +54,29 @@ class PainterBite {
 		this.color = e.getAttribute("data-color")
 	}
 
+	startDrawing(e) {
+			this.x = e.clientX - this.rect.left
+			this.y = e.clientY - this.rect.top
+			this.isDrawing = true;
+	}
+
 	stopDrawing(e) {
 		if (this.isDrawing) {
-			this.x = 0;
-			this.y = 0;
-			this.isDrawing = false;
+			this.x = 0
+			this.y = 0
+			this.isDrawing = false
 		}
 	}
 
 	saveDrawing() {
-		localStorage.setItem("paint", this.paint.toDataURL());
+		localStorage.setItem("paint", this.paint.toDataURL())
 	}
 
 	loadDrawing() {
-		let src = localStorage.getItem("paint");
-		let img = document.createElement('img');
-		img.src = src;
-		this.erase;
+		let src = localStorage.getItem("paint")
+		let img = document.createElement('img')
+		img.src = src
+		this.erase
 		this.context.drawImage(img, 0, 0)
 	}
 
@@ -104,6 +109,18 @@ class PainterBite {
 		this.shape = e.getAttribute("data-shape")
 	}
 
+	startFill(e) {
+		this.isFilling = true;
+		this.paint.style.cursor = "crosshair"
+	}
+
+	fill(e) {
+		this.context.fillStyle = this.color
+		this.context.fillFlood(e.clientX - this.rect.left, e.clientY - this.rect.top)
+		this.isFilling = false;
+		this.paint.style.cursor = "pointer"
+	}
+
 	bindClickButtons(e) {
 		const action = e.currentTarget.getAttribute("data-action")
 		if (typeof this[action] === "function") {
@@ -111,8 +128,11 @@ class PainterBite {
 		}
 	}
 
-	listeners() {
+	checkInCanvas(e) {
+		return e.clientX - this.rect.left >= 0 && e.clientY - this.rect.top >= 0 && e.clientX - this.rect.left <= this.paint.width && e.clientY - this.rect.top <= this.paint.height
+	}
 
+	listeners() {
 		window.socket.on('drawing', (data) => {
 			this.drawLine({
 				x1: data.x1,
@@ -126,7 +146,7 @@ class PainterBite {
 		})
 
 		window.socket.on('g-erase', () => {
-			this.erase();
+			this.erase()
 		})
 
 		const actions = [...document.querySelectorAll("[data-action]")]
@@ -138,9 +158,11 @@ class PainterBite {
 		})
 
 		this.paint.addEventListener('mousedown', e => {
-			this.x = e.clientX - this.rect.left;
-			this.y = e.clientY - this.rect.top;
-			this.isDrawing = true;
+			if (this.isFilling) {
+				this.fill(e)
+			} else {
+				this.startDrawing(e)
+			}
 		});
 
 		this.paint.addEventListener('mousemove', e => {
@@ -153,7 +175,7 @@ class PainterBite {
 		});
 
 		document.querySelector("form").addEventListener("submit", function(e) {
-			e.preventDefault();
+			e.preventDefault()
 		})
 
 		document.querySelector("#line-width").addEventListener("mouseup", (e) => {
