@@ -27,6 +27,10 @@ io.on('connection', (socket) => {
 	socket.on("g-erase", () => {
 		io.emit('g-erase')
 	})
+
+	socket.on("share", (img) => {
+		io.emit("share", img)
+	})
 });
 
 http.listen(port, () => {

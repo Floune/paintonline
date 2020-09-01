@@ -22,8 +22,16 @@ class PainterBite {
 		this.context.beginPath()
 		this.context.strokeStyle = drawInfos.color
 		this.context.lineWidth = drawInfos.width
+		this.putShape(drawInfos)
+		this.context.stroke()
+		this.context.closePath()
+	}
+
+	putShape(drawInfos) {
 		if (drawInfos.shape === "rond") {
 			this.context.arc(drawInfos.x1, drawInfos.y1, 7.5, 0, Math.PI * 2, false)
+			this.context.fillStyle = this.color
+			this.context.fill()
 		}
 		if (drawInfos.shape === "trait") {
 			this.context.moveTo(drawInfos.x1, drawInfos.y1)
@@ -35,9 +43,6 @@ class PainterBite {
 			this.context.lineTo(drawInfos.x1 + 20, drawInfos.y1)
 			this.context.lineTo(drawInfos.x1, drawInfos.y1)
 		}
-
-		this.context.stroke()
-		this.context.closePath()
 	}
 
 	erase() {
@@ -55,9 +60,9 @@ class PainterBite {
 	}
 
 	startDrawing(e) {
-			this.x = e.clientX - this.rect.left
-			this.y = e.clientY - this.rect.top
-			this.isDrawing = true;
+		this.x = e.clientX - this.rect.left
+		this.y = e.clientY - this.rect.top
+		this.isDrawing = true;
 	}
 
 	stopDrawing(e) {
@@ -86,7 +91,7 @@ class PainterBite {
 				x1: this.x,
 				y1: this.y,
 				x2: e.clientX - this.rect.left,
-				x2: e.clientY - this.rect.top,
+				y2: e.clientY - this.rect.top,
 				color: this.color,
 				width: this.lineWidth,
 				shape: this.shape,
@@ -132,6 +137,10 @@ class PainterBite {
 		return e.clientX - this.rect.left >= 0 && e.clientY - this.rect.top >= 0 && e.clientX - this.rect.left <= this.paint.width && e.clientY - this.rect.top <= this.paint.height
 	}
 
+	share(e) {
+		socket.emit("share", this.paint.toDataURL())
+	}
+
 	listeners() {
 		window.socket.on('drawing', (data) => {
 			this.drawLine({
@@ -147,6 +156,10 @@ class PainterBite {
 
 		window.socket.on('g-erase', () => {
 			this.erase()
+		})
+
+		window.socket.on("share", (img) => {
+			console.log(img)
 		})
 
 		const actions = [...document.querySelectorAll("[data-action]")]

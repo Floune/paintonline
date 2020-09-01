@@ -1,10 +1,27 @@
 .chat {
+	padding: 10 10;
+	height: 700px;
+	max-height: 700px;
+	max-width: 248px;
+	width: 248px;
 	display: flex;
 	flex-direction: column;
-	overflow: scroll;
-	flex-grow: 2;
-	max-width: 250px;
-	max-height: 93vh;
 	justify-content: flex-end;
 }
 
+#messages {
+	overflow: scroll;
+}
+
+.msg {
+	height: 40px;
+	padding-left: 7px;
+}
+
+.msg:nth-child(odd) {
+	background-color: yellow;
+}
+
+.msg:nth-child(even) {
+	background-color: grey;
+}
