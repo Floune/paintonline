@@ -3,6 +3,8 @@ const app = express()
 const port = process.env.PORT || 3000
 const path = require('path')
 var http = require('http').createServer(app);
+var ent = require('ent');
+var decode = require('ent/decode');
 var io = require('socket.io')(http);
 
 app.use(express.static('public'))
@@ -15,7 +17,7 @@ io.on('connection', (socket) => {
 	console.log('a user connected');
 
 	socket.on('message', (msg) => {
-		io.emit('message', msg)
+		io.emit('message', decode(msg))
 	});
 
 	socket.on("drawing", (data) => {
