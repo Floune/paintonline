@@ -86,8 +86,7 @@ class PainterBite {
 	}
 
 	handleMove(e) {
-		if (this.isDrawing) {
-			this.drawLine({
+		var drawInfos = {
 				x1: this.x,
 				y1: this.y,
 				x2: e.clientX - this.rect.left,
@@ -95,16 +94,10 @@ class PainterBite {
 				color: this.color,
 				width: this.lineWidth,
 				shape: this.shape,
-			});
-			socket.emit("drawing", {
-				x1: this.x, 
-				y1: this.y,
-				x2: e.clientX - this.rect.left,
-				y2: e.clientY - this.rect.top,
-				color: this.color,
-				lineWidth: this.lineWidth,
-				shape: this.shape,
-			})
+			}
+		if (this.isDrawing) {
+			this.drawLine(drawInfos);
+			socket.emit("drawing", drawInfos)
 			this.x = e.clientX - this.rect.left;
 			this.y = e.clientY - this.rect.top;
 		}
@@ -134,11 +127,22 @@ class PainterBite {
 	}
 
 	checkInCanvas(e) {
-		return e.clientX - this.rect.left >= 0 && e.clientY - this.rect.top >= 0 && e.clientX - this.rect.left <= this.paint.width && e.clientY - this.rect.top <= this.paint.height
+		return e.clientX - this.rect.left >= 1 && e.clientY - this.rect.top >= 1 && e.clientX - this.rect.left <= this.paint.width && e.clientY - this.rect.top <= this.paint.height
 	}
 
 	share(e) {
 		socket.emit("share", this.paint.toDataURL())
+	}
+
+	displayShared(img) {
+		this.erase();
+		let shared = new Image();
+		console.log(shared)
+		shared.onload = () => {
+			this.context.drawImage(shared, 0, 0)
+		}
+		shared.src = img;
+
 	}
 
 	listeners() {
@@ -159,7 +163,7 @@ class PainterBite {
 		})
 
 		window.socket.on("share", (img) => {
-			console.log(img)
+			this.displayShared(img)
 		})
 
 		const actions = [...document.querySelectorAll("[data-action]")]

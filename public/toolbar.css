@@ -30,6 +30,18 @@
 	height: 20px;
 }
 
+.shape-dash {
+	background: url("dash.png");
+}
+
+.shape-circle {
+	background: url("circle.png");
+}
+
+.shape-triangle {
+	background: url("triangle.png");
+}
+
 .action-erase {
 	background: url("close.png")
 }
